@@ -52,5 +52,6 @@ It uses Python as its language.
     <li>#</li>
   </ul>
   
-    <h3>Frontend Application:</h3>
-    This application is what the user interacts with and will be using React.js
+   <h3>Frontend Application:</h3>
+   
+   This application is what the user interacts with and will be using React.js
