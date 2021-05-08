@@ -33,6 +33,16 @@ It uses Python as its language.
     <li>#</li>
   </ul>
   
+  <h3>News Application:</h3>
+This application will provide the feature of news about the different cryptocurrencies that the user is interested in.
+
+  <br/><br/>
+  <strong>KAFKA TOPICS TBD:</strong>
+  
+  <ul>
+    <li>#</li>
+  </ul>
+  
   <h3>REST API Application:</h3>
  This application establishes the communication channel to the frontend of the project, it will provide a REST API that the frontend will use and realtime communication to
  push events.
