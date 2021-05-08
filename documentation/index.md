@@ -11,6 +11,18 @@ to be used by the frontend interface.
   <li>Alarm notification on the front-end if the crypto prices reaches a certain threshold</li>
 </ul>
 
+<h2>User Stories:</h2>
+<h3>User Story 1:</h3>
+<p>As a rookie cryptocurrency investor, I want to be able to receive a warning when the price of ethereum goes 100 euros above the price I bought it so that I can sell it with a good profit margin.</p>
+<h3>User Story 2:</h3>
+<p>As [some user], I want to know when the price will Bitcoin will go under 50000 USD so that I can exchange before losing money.</p>
+<h3>User Story 3:</h3>
+<p>As a long term investor, I wish to see the evolution of several cryptocurrencies over a period of several years so that I can plan my investments.</p>
+<h3>User Story 4:</h3>
+<p>As [some user], I want to be able to pick the cryptocurrencies I'm most interested and receive news related to them so I can do better choices</p>
+<h3>User Story 5:</h3>
+<p>As [some user], I want to be able to login so that I can access my account/account settings</p>
+
 
 
 <h2>Team:</h2>
