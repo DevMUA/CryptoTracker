@@ -5,6 +5,8 @@ import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
+import PageHeader from "../components/PageHeader";
+import { BiNews } from "react-icons/bi";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -34,7 +36,14 @@ export default function News() {
   return (
     <main>
       <section className="section-title">
-        <div className="title">N E W S</div>
+        <div className="title">
+          <PageHeader
+            title="News"
+            subtitle="test"
+            icon={<BiNews color="orange"></BiNews>}
+            size="h2"
+          />
+        </div>
       </section>
       <section className="section-news">
         <Paper className="news-tabs">

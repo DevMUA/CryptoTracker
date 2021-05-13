@@ -294,7 +294,7 @@ Section Title
 .title{
   text-align: center;
   font-size: 3em;
-  margin-top: 3em;
+  margin-top: 1em;
 }
 
 /*
@@ -412,7 +412,7 @@ Section News
 
 .section-news{
     color: var(--clr-white);
-    margin: 5em auto 0 auto;
+    margin: 0.5em auto 0 auto;
     display: block;
     max-width: 1170px;
 }
@@ -555,4 +555,29 @@ CRYPTO COINS
   display:flex;
   align-items: center;
   text-align: center;
+}
+
+.sidebar-sublinks{
+  display: grid;
+  grid-template-columns: 2fr;
+  row-gap: 0.25rem;
+}
+
+.sidebar-sublinks a {
+  display: block;
+  color: var(--clr-grey-1);
+  text-transform: capitalize;
+  display: flex;
+  align-items: center;
+}
+
+.section-register{
+      color: var(--clr-white);
+      margin: 5em auto 0 auto;
+      display: block;
+      max-width: 500px;
+}
+
+.register-button{
+  margin-top: 3em;
 }

@@ -1,5 +1,7 @@
 import React from "react";
 import CryptoCurrency from "../components/CryptoCurrency";
+import PageHeader from "../components/PageHeader";
+import { FaCoins } from "react-icons/fa";
 
 export default function Livefeed() {
   const tableInformation = {
@@ -25,7 +27,14 @@ export default function Livefeed() {
   return (
     <main>
       <section className="section-title">
-        <div className="title">C R Y P T O C U R R E N C I E S</div>
+        <div className="title">
+          <PageHeader
+            title="CryptoCurrencies"
+            subtitle="test"
+            icon={<FaCoins color="orange"></FaCoins>}
+            size="h2"
+          />
+        </div>
       </section>
       <section className="section-crypto-table">
         <CryptoCurrency {...tableInformation}></CryptoCurrency>

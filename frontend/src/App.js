@@ -7,6 +7,9 @@ import Home from "./pages/Home";
 import Error from "./pages/Error";
 import Livefeed from "./pages/Livefeed";
 import News from "./pages/News";
+import AccountSettings from "./pages/AccountSettings";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
 
 // import components
 import Navbar from "./components/Navbar";
@@ -25,6 +28,15 @@ function App() {
         </Route>
         <Route exact path="/news">
           <News />
+        </Route>
+        <Route exact path="/settings">
+          <AccountSettings />
+        </Route>
+        <Route exact path="/login">
+          <LoginPage />
+        </Route>
+        <Route exact path="/register">
+          <RegisterPage />
         </Route>
         <Route path="/crypto/:name">
           <CryptoCurrencyPage />
