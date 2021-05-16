@@ -13,15 +13,15 @@ to be used by the frontend interface.
 
 <h2>User Stories:</h2>
 <h3>User Story 1:</h3>
-<p>As a rookie cryptocurrency investor, I want to be able to receive a warning when the price of ethereum goes 100 euros above the price I bought it so that I can sell it with a good profit margin.</p>
+<p>As a rookie cryptocurrency investor, after I bought 1 Ether at 2000 euros I want to receive a warning of when the price of Ether goes above 2200 so that I can exchange it with 200 euros of profit</p>
 <h3>User Story 2:</h3>
-<p>As [some user], I want to know when the price will Bitcoin will go under 50000 USD so that I can exchange before losing money.</p>
+<p>As logged user I want to see prediction of price of Ethereum in next five hours, to decide if I should sell it</p>
 <h3>User Story 3:</h3>
-<p>As a long term investor, I wish to see the evolution of several cryptocurrencies over a period of several years so that I can plan my investments.</p>
+<p>As logged user I want to see graph with price of Dogecoin during last five years, so that I can plan my investments.</p>
 <h3>User Story 4:</h3>
-<p>As [some user], I want to be able to pick the cryptocurrencies I'm most interested and receive news related to them so I can do better choices</p>
+<p>As logged user I want to be able to receive news about Litecoin, to be up-to-date</p>
 <h3>User Story 5:</h3>
-<p>As [some user], I want to be able to login so that I can access my account/account settings</p>
+<p>As non logged user, I want to be able to login so that I can access my account/account settings</p>
 
 
 
