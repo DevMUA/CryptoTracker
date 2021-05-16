@@ -26,4 +26,4 @@ to be used by the frontend interface.
 
 
 <h2>Team:</h2>
-To know who is behind this project go over the team section. [test](https://github.com/DevMUA/CryptoTracker/blob/main/documentation/team/about.md)
+To know who is behind this project go over the <a href="https://github.com/DevMUA/CryptoTracker/blob/main/documentation/team/about.md">team section</a>.
