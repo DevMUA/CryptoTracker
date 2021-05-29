@@ -25,7 +25,6 @@ export default function CryptoCurrency({
   }, [iconHover]);
 
   function toggleHover() {
-    console.log("hovered");
     if (iconHover) {
       setIconHover(false);
     } else {

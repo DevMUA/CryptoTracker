@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { Link, Redirect, useHistory } from "react-router-dom";
 import { FaBars } from "react-icons/fa";
 import { MdNotifications } from "react-icons/md";
 import { CgProfile } from "react-icons/cg";
@@ -7,14 +8,70 @@ import sublinks from "../sublinks";
 import logo from "../logo3.svg";
 import Badge from "@material-ui/core/Badge";
 import { Popover } from "@material-ui/core";
+import { useGlobalContext } from "../context";
 
 const Navbar = () => {
   const [showLinks, setShowLinks] = useState(false);
-  const [signedIn, setSignedIn] = useState(true);
+  const { signedIn, setSignedIn, email, setGlobalEmail } = useGlobalContext();
   const [anchorProfile, setAnchorProfile] = useState(null);
   const [anchorNotification, setAnchorNotification] = useState(null);
   const linksContainerRef = useRef(null);
   const linksRef = useRef(null);
+  const [notifications, setNotifications] = useState([]);
+  const [listening, setListening] = useState(false);
+  let eventSource = undefined;
+  const history = useHistory();
+
+  console.log(localStorage.getItem("notifications"));
+  if (localStorage.getItem("notifications") === null)
+    localStorage.setItem("notifications", JSON.stringify([]));
+
+  if (localStorage.getItem("isListening") === null)
+    localStorage.setItem("isListening", "false");
+
+  useEffect(() => {
+    var isListening = localStorage.getItem("isListening");
+    console.log(isListening);
+    if (isListening === "false") {
+      var emailToUse = localStorage.getItem("email");
+      console.log("listening with email " + emailToUse);
+      eventSource = new EventSource(
+        "http://localhost:9090/listen=" + emailToUse
+      );
+
+      eventSource.onopen = (event) => {
+        console.log("connection opened");
+      };
+
+      eventSource.onmessage = (event) => {
+        console.log("result", event.data);
+        console.log(event.data.length);
+        if (event.data.length === 2) return;
+        var notificationss = JSON.parse(localStorage.getItem("notifications"));
+        notificationss.push(event.data);
+        localStorage.setItem("notifications", JSON.stringify(notificationss));
+        history.go(0);
+        //setNotifications((old) => [...old, event.data]);
+      };
+
+      eventSource.onerror = (event) => {
+        console.log("error");
+        console.log(event.target.readyState);
+        if (event.target.readyState === EventSource.CLOSED) {
+          console.log("eventsource closed (" + event.target.readyState + ")");
+        }
+        eventSource.close();
+      };
+
+      localStorage.setItem("isListening", "true");
+    }
+
+    return () => {
+      eventSource.close();
+      console.log("eventsource closed");
+    };
+  }, []);
+
   const toggleLinks = () => {
     setShowLinks(!showLinks);
   };
@@ -26,6 +83,15 @@ const Navbar = () => {
       linksContainerRef.current.style.height = "0px";
     }
   }, [showLinks]);
+
+  useEffect(() => {
+    if (localStorage.getItem("signedIn")) {
+      setSignedIn(localStorage.getItem("signedIn"));
+    }
+    if (localStorage.getItem("email")) {
+      setGlobalEmail(localStorage.getItem("email"));
+    }
+  }, []);
 
   const openProfile = (e) => {
     setAnchorProfile(e.currentTarget);
@@ -52,18 +118,23 @@ const Navbar = () => {
             return (
               <article key={index}>
                 <div className="sidebar-sublinks">
+                  <a href="">{email}</a>
                   {links.map((link, index) => {
                     const { url, icon, label } = link;
-                    if (signedIn && (label === "Login" || label === "Register"))
-                      return "";
+                    var tmp = signedIn === "true";
+                    //tmp = true;
                     if (
-                      !signedIn &&
-                      label !== "Login" &&
-                      label !== "Register"
+                      tmp === true &&
+                      (label === "Login" || label === "Register")
                     ) {
                       return "";
                     }
-                    console.log(label);
+                    if (
+                      tmp === false &&
+                      (label === "Account Settings" || label === "Logout")
+                    ) {
+                      return "";
+                    }
                     return (
                       <a key={index} href={url}>
                         {icon}
@@ -88,11 +159,25 @@ const Navbar = () => {
           anchorEl={anchorNotification}
           anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
           transformOrigin={{ vertical: "top", horizontal: "center" }}
-          onClose={() => setAnchorNotification(null)}
+          onClose={() => {
+            setAnchorNotification(null);
+            localStorage.setItem("notifications", JSON.stringify([]));
+          }}
         >
           <div className="submenu">
             <article>
-              <div className="sidebar-sublinks">No notifications</div>
+              <div className="sidebar-sublinks">
+                {JSON.parse(localStorage.getItem("notifications")).map(
+                  (item, index) => {
+                    //var obj = JSON.parse(item);
+                    return (
+                      <a key={index} href="">
+                        {item}
+                      </a>
+                    );
+                  }
+                )}
+              </div>
             </article>
           </div>
         </Popover>
@@ -125,7 +210,12 @@ const Navbar = () => {
           <ul className="options">
             {renderNotifications()}
             <li onClick={openNotification}>
-              <Badge badgeContent={0} color="secondary">
+              <Badge
+                badgeContent={
+                  JSON.parse(localStorage.getItem("notifications")).length
+                }
+                color="secondary"
+              >
                 <MdNotifications size={30} />
               </Badge>
             </li>

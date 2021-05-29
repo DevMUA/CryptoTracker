@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+
+  backend:
+    image: backend
+    networks:
+      - broker-kafka
+    ports:
+      - "9090:9090"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/postgres
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: admin
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    depends_on:
+      - db
+
+
+  db:
+    image: postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: postgres
+    networks:
+      - broker-kafka
+
+  react-app:
+      image: react-app
+      stdin_open: true
+      ports:
+        - "3000:3000"
+      networks:
+        - broker-kafka
+
+networks:
+    broker-kafka:
+      driver: bridge

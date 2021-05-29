@@ -1,40 +1,23 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import sublinks from "./sublinks";
 const AppContext = React.createContext();
 
 const AppProvider = ({ children }) => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);
-  const [page, setPage] = useState({ page: "", links: [] });
-  const [location, setLocation] = useState({});
-  const openSidebar = () => {
-    setIsSidebarOpen(true);
-  };
-  const closeSidebar = () => {
-    setIsSidebarOpen(false);
-  };
-  const openSubmenu = (text, coordinates) => {
-    const page = sublinks.find((link) => link.page === text);
-    setPage(page);
-    setLocation(coordinates);
-    setIsSubmenuOpen(true);
-  };
-  const closeSubmenu = () => {
-    setIsSubmenuOpen(false);
-  };
+  const [signedIn, setSignedIn] = useState(false);
+  const [email, setGlobalEmail] = useState("Not Signed In");
+
+  useEffect(() => {
+    if (localStorage.getItem("signedIn")) {
+      setSignedIn(localStorage.getItem("signedIn"));
+    }
+    if (localStorage.getItem("email")) {
+      setGlobalEmail(localStorage.getItem("email"));
+    }
+  }, []);
 
   return (
     <AppContext.Provider
-      value={{
-        isSidebarOpen,
-        openSidebar,
-        closeSidebar,
-        isSubmenuOpen,
-        openSubmenu,
-        closeSubmenu,
-        page,
-        location,
-      }}
+      value={{ signedIn, setSignedIn, email, setGlobalEmail }}
     >
       {children}
     </AppContext.Provider>

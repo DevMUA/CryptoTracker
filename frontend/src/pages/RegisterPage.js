@@ -1,6 +1,8 @@
 import React from "react";
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
+
 import {
   createMuiTheme,
   withStyles,
@@ -17,12 +19,29 @@ const initialValues = {
   password: "",
 };
 export default function RegisterPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
   const paperStyle = {
     padding: 20,
     height: "250px",
     width: "100%",
     margin: "20px auto",
   };
+
+  function register() {
+    console.log(password);
+    axios({
+      method: "post",
+      url: "http://localhost:9090/api/v1/registration",
+      data: {
+        firstName: "",
+        lastName: "",
+        password: password,
+        email: email,
+      },
+    });
+  }
 
   const ColorButton = withStyles((theme) => ({
     root: {
@@ -48,18 +67,29 @@ export default function RegisterPage() {
             <TextField
               label="Email"
               placeholder="example@gmail.com"
+              onChange={(event) => {
+                setEmail(event.target.value);
+              }}
               fullWidth
               required
             ></TextField>
             <TextField
               label="Password"
               placeholder="123"
+              onChange={(event) => {
+                setPassword(event.target.value);
+              }}
               fullWidth
               required
               type="password"
             ></TextField>
             <div className="register-button">
-              <ColorButton type="submit" fullWidth variant="contained">
+              <ColorButton
+                type="submit"
+                fullWidth
+                variant="contained"
+                onClick={() => register()}
+              >
                 Register
               </ColorButton>
             </div>
