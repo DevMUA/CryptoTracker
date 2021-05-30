@@ -14,7 +14,7 @@
 	<name>AccountApp</name>
 	<description>Module that has the accounts information and alerts</description>
 	<properties>
-		<java.version>15</java.version>
+		<java.version>11</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
