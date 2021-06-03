@@ -6,7 +6,7 @@ pipeline {
     }
     agent any 
     stages {
-        stage("Cleaning Workspace") {
+/*        stage("Cleaning Workspace") {
             steps {
                 sh 'rm -rf .git'
                 sh 'rm -rf .gitignore'
@@ -50,6 +50,53 @@ pipeline {
                 sh "docker rmi $accountAppImageName" 
             }
         }
+        stage("Deploy to Playground VM") {
+            steps {
+                sh "echo deploying"
+            }
+        }
+*/
+        stage("Build Maven Projects") {
+            agent {
+                docker { image "maven:3.8.1-openjdk-15" }
+            }
+            steps {
+                sh '''
+                cd accountModule/AccountApp
+                java -version
+                mvn -e -Dmaven.test.failure.ignore=true package
+                '''
+                stash includes: '**/target/*.jar', name: 'app'
+            }
+        }
+
+        stage("Build Images") {
+            steps {
+                unstash 'app'
+                script {
+                    docker.withRegistry(registry) {
+                        accountAppImage = docker.build(accountAppImageName, "./accountModule/AccountApp")
+                    }
+                }
+            }
+        }
+
+        stage('Publish Images') { 
+            steps { 
+                script { 
+                    docker.withRegistry(registry) { 
+                        accountAppImage.push()
+                    }
+                } 
+            }
+        }
+
+        stage('Cleaning up local images') { 
+            steps { 
+                sh "docker rmi $accountAppImageName" 
+            }
+        }
+        
         stage("Deploy to Playground VM") {
             steps {
                 sh "echo deploying"
