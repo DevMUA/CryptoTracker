@@ -44,7 +44,7 @@ public class SsePushNotificationRestController {
     }
 
     @CrossOrigin
-    @GetMapping("/addAlarm")
+    @PostMapping("/addAlarm")
     public void doAddAlarm(@RequestBody UserRequest request) throws InterruptedException, IOException {
         service.addAlarm(request.getAccount());
     }
