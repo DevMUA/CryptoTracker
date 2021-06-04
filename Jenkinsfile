@@ -2,7 +2,13 @@ pipeline {
     environment { 
         registry = "http://192.168.160.48:5000" 
         accountAppImageName = "esp53/account-app"
+        frontEndImageName = "esp53/frontend"
+        mlModuleAPIImageName = "esp53/mlmodule-api"
+        mlModuleKafkaImageName = "esp53/mlmodule-kafka"
         accountAppImage = ''
+        frontEndImage = ''
+        mlModuleAPIImage = ''
+        mlModuleKafkaImage = ''
     }
     agent any 
     stages {
@@ -76,6 +82,9 @@ pipeline {
                 script {
                     docker.withRegistry(registry) {
                         accountAppImage = docker.build(accountAppImageName, "./accountModule/AccountApp")
+                        frontEndImage = docker.build(frontEndImageName, "./frontend")
+                        mlModuleAPIImage = docker.build(mlModuleAPIImageName, "./mlModule/model_api")
+                        mlModuleKafkaImage = docker.build(mlModuleKafkaImageName, "./mlModule/model_kafka")
                     }
                 }
             }
@@ -86,6 +95,9 @@ pipeline {
                 script { 
                     docker.withRegistry(registry) { 
                         accountAppImage.push()
+                        frontEndImage.push()
+                        mlModuleAPIImage.push()
+                        mlModuleKafkaImage.push()
                     }
                 } 
             }
@@ -93,7 +105,10 @@ pipeline {
 
         stage('Cleaning up local images') { 
             steps { 
-                sh "docker rmi $accountAppImageName" 
+                sh "docker rmi $accountAppImageName"
+                sh "docker rmi $frontendImageName" 
+                sh "docker rmi $mlModuleAPIImageName"
+                sh "docker rmi $mlModuleKafkaImageName"
             }
         }
         
