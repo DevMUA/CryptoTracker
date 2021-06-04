@@ -15,6 +15,7 @@ import News from "./pages/News";
 import AccountSettings from "./pages/AccountSettings";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import AlarmCreation from "./pages/AlarmCreation";
 import { useGlobalContext } from "./context";
 
 // import components
@@ -62,6 +63,9 @@ function App() {
         </Route>
         <Route path="/crypto/:name">
           <CryptoCurrencyPage />
+        </Route>
+        <Route path="/alarm-creation">
+          <AlarmCreation />
         </Route>
         <Route path="*">
           <Error />

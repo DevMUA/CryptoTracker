@@ -2,6 +2,7 @@ package com.ESproject.AccountApp.notifications;
 
 import com.ESproject.AccountApp.Account.Account;
 import com.ESproject.AccountApp.Account.Alarm;
+import com.ESproject.AccountApp.Account.FavouriteCoin;
 import com.ESproject.AccountApp.Account.Notification;
 import com.ESproject.AccountApp.Repository.AccountRepository;
 import com.ESproject.AccountApp.Repository.NotificationRepository;
@@ -137,6 +138,38 @@ public class SsePushNotificationService {
         Optional<Account> acc = accountRepository.findAccountByEmail(account.getEmail());
         if(acc.isPresent()){
             return acc.get().getAlarms();
+        }
+        return null;
+    }
+
+    public void addFavouriteCoin(Account account){
+        Optional<Account> acc = accountRepository.findAccountByEmail(account.getEmail());
+        if(acc.isPresent()){
+            FavouriteCoin newFavouriteCoin = new FavouriteCoin();
+            newFavouriteCoin.setCoinName(account.getFavouriteCoins().get(0).getCoinName());
+            if(!acc.get().getFavouriteCoins().contains(newFavouriteCoin)){
+                acc.get().getFavouriteCoins().add(newFavouriteCoin);
+                accountRepository.save(acc.get());
+            }
+        }
+    }
+
+    public void deleteFavouriteCoin(int id, Account account){
+        System.out.println("deleting favourite coin with id: " + id + "  and account : " + account.toString());
+        Optional<Account> acc = accountRepository.findAccountByEmail(account.getEmail());
+        if(acc.isPresent()){
+            for(int i= 0; i < acc.get().getFavouriteCoins().size(); i++){
+                if(id==acc.get().getFavouriteCoins().get(i).getAid())
+                    acc.get().getFavouriteCoins().remove(i);
+            }
+        }
+        accountRepository.save(acc.get());
+    }
+
+    public List<FavouriteCoin> getFavouriteCoins(Account account){
+        Optional<Account> acc = accountRepository.findAccountByEmail(account.getEmail());
+        if(acc.isPresent()){
+            return acc.get().getFavouriteCoins();
         }
         return null;
     }

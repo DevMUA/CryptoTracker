@@ -49,6 +49,11 @@ public class Account implements UserDetails {
     @JoinColumn(name = "user_notifications_fk", referencedColumnName = "id")
     private List<Notification> notifications;
 
+    @Fetch(FetchMode.SELECT)
+    @OneToMany(fetch=FetchType.EAGER,targetEntity = FavouriteCoin.class, cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_favouritecoins_fk", referencedColumnName = "id")
+    private List<FavouriteCoin> favouriteCoins;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority(appUserRole.name());

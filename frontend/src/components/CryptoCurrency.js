@@ -2,6 +2,7 @@ import React, { useState, useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
+import axios from "axios";
 
 export default function CryptoCurrency({
   id,
@@ -33,7 +34,26 @@ export default function CryptoCurrency({
   }
   function OnFavourite(e) {
     e.stopPropagation();
-    window.alert("favourited");
+    var emailToUse = localStorage.getItem("email");
+    console.log(emailToUse);
+    var data = {
+      account: {
+        email: emailToUse,
+        favouriteCoins: [
+          {
+            coinName: name,
+          },
+        ],
+      },
+    };
+    axios({
+      method: "POST",
+      url: "http://localhost:9090/addFavouriteCoins",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: data,
+    }).then((response) => {});
   }
 
   function RedirectToCoin(e, name, history) {
