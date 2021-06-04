@@ -9,6 +9,7 @@ import logo from "../logo3.svg";
 import Badge from "@material-ui/core/Badge";
 import { Popover } from "@material-ui/core";
 import { useGlobalContext } from "../context";
+import axios from "axios";
 
 const Navbar = () => {
   const [showLinks, setShowLinks] = useState(false);
@@ -19,6 +20,7 @@ const Navbar = () => {
   const linksRef = useRef(null);
   const [notifications, setNotifications] = useState([]);
   const [listening, setListening] = useState(false);
+
   let eventSource = undefined;
   const history = useHistory();
 
@@ -30,41 +32,50 @@ const Navbar = () => {
     localStorage.setItem("isListening", "false");
 
   useEffect(() => {
-    var isListening = localStorage.getItem("isListening");
-    console.log(isListening);
-    if (isListening === "false") {
-      var emailToUse = localStorage.getItem("email");
-      console.log("listening with email " + emailToUse);
-      eventSource = new EventSource(
-        "http://localhost:9090/listen=" + emailToUse
-      );
+    //var isListening = localStorage.getItem("isListening");
+    //var es = localStorage.getItem("eventSource");
+    var emailToUse = localStorage.getItem("email");
+    console.log(emailToUse);
+    console.log("Not signed In");
+    if (emailToUse === "Not Signed In") return;
+    console.log("listening with email " + emailToUse);
+    eventSource = new EventSource(
+      "http://localhost:9090/notification=" + emailToUse
+    );
 
-      eventSource.onopen = (event) => {
-        console.log("connection opened");
-      };
+    eventSource.onopen = (event) => {
+      console.log("connection opened");
+    };
 
-      eventSource.onmessage = (event) => {
-        console.log("result", event.data);
-        console.log(event.data.length);
-        if (event.data.length === 2) return;
-        var notificationss = JSON.parse(localStorage.getItem("notifications"));
+    eventSource.onmessage = (event) => {
+      //if (event.data.length === 2) return;
+      var notificationss = JSON.parse(localStorage.getItem("notifications"));
+      if (!notificationss.includes(event.data) && event.data !== "") {
         notificationss.push(event.data);
-        localStorage.setItem("notifications", JSON.stringify(notificationss));
         history.go(0);
-        //setNotifications((old) => [...old, event.data]);
-      };
+      }
+      localStorage.setItem("notifications", JSON.stringify(notificationss));
+      //setNotifications((old) => [...old, event.data]);
+      const msg = event.data;
+      console.log(msg);
+    };
 
-      eventSource.onerror = (event) => {
-        console.log("error");
-        console.log(event.target.readyState);
-        if (event.target.readyState === EventSource.CLOSED) {
-          console.log("eventsource closed (" + event.target.readyState + ")");
-        }
-        eventSource.close();
-      };
+    eventSource.onerror = (event) => {
+      console.log("error");
+      console.log(event.target.readyState);
+      if (event.target.readyState === EventSource.CLOSED) {
+        console.log("eventsource closed (" + event.target.readyState + ")");
+      }
+      eventSource.close();
+    };
 
-      localStorage.setItem("isListening", "true");
-    }
+    eventSource.addEventListener(
+      "second",
+      function (e) {
+        console.log("second", e.data);
+      },
+      false
+    );
 
     return () => {
       eventSource.close();
@@ -153,6 +164,17 @@ const Navbar = () => {
 
   const renderNotifications = () => {
     if (signedIn) {
+      var emailToUse = localStorage.getItem("email");
+      if (emailToUse !== "Not Signed In") {
+        var urlToUse = "http://localhost:9090/readnotification=" + emailToUse;
+        axios({
+          method: "get",
+          url: urlToUse,
+        }).then((response) => {
+          console.log(response);
+        });
+      }
+
       return (
         <Popover
           open={Boolean(anchorNotification)}

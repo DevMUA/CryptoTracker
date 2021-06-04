@@ -581,3 +581,37 @@ CRYPTO COINS
 .register-button{
   margin-top: 3em;
 }
+
+/*
+=============== 
+Section Settings Alarm info
+===============
+*/
+
+.crypto-alarm-div {
+  background-color: white;
+  border-radius: 2%;
+  max-width: 1170px;
+  margin-top: 1.5em;
+  height: 3em;
+  display: block;
+}
+
+@media screen and (min-width: 992px) {
+  .crypto-alarm-div {
+    display: grid;
+    grid-template-columns: 2fr 2fr 2fr 2fr 2fr 2fr;
+    gap: 1rem;
+    align-items: center;
+  }
+}
+
+.crypto-icon-remove p {
+  margin-bottom: 0;
+  width: 20%;
+}
+
+.addAlarm{
+  margin-top: 2rem;
+  text-align: center;
+}

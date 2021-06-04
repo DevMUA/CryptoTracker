@@ -1,6 +1,8 @@
 package com.ESproject.AccountApp.Account;
 
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -37,11 +39,13 @@ public class Account implements UserDetails {
         this.appUserRole = appUserRole;
     }
 
-    @OneToMany(targetEntity = Alarm.class , cascade = CascadeType.ALL)
+    @Fetch(FetchMode.SELECT)
+    @OneToMany(fetch=FetchType.EAGER,targetEntity = Alarm.class , cascade = CascadeType.ALL)
     @JoinColumn(name = "user_alarm_fk", referencedColumnName = "id")
     private List<Alarm> alarms;
 
-    @OneToMany(targetEntity = Notification.class, cascade = CascadeType.ALL)
+    @Fetch(FetchMode.SELECT)
+    @OneToMany(fetch=FetchType.EAGER,targetEntity = Notification.class, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_notifications_fk", referencedColumnName = "id")
     private List<Notification> notifications;
 

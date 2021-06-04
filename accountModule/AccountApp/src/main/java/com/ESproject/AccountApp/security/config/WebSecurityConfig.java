@@ -23,7 +23,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable().authorizeRequests().antMatchers("/api/v*/registration/**").permitAll().and().authorizeRequests().antMatchers("/api/v*/login").permitAll()
+        http.csrf().disable().authorizeRequests().antMatchers("/api/v*/registration/**").permitAll().and().authorizeRequests().antMatchers("/api/v*/login").permitAll().and().authorizeRequests().antMatchers("/notification*").permitAll().and().authorizeRequests().antMatchers("/readnotification*").permitAll().and().authorizeRequests().antMatchers("/createfakeNotification*").permitAll()
+                .and().authorizeRequests().antMatchers("/addAlarm").permitAll().and().authorizeRequests().antMatchers("/getAlarms").permitAll()
+                .and().authorizeRequests().antMatchers("/deleteAlarm=*").permitAll()
                 .and().authorizeRequests().antMatchers("/getAccounts").permitAll().anyRequest().authenticated();
     }
 
