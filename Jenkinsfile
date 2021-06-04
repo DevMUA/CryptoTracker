@@ -2,7 +2,9 @@ pipeline {
     environment { 
         registry = "http://192.168.160.48:5000" 
         accountAppImageName = "esp53/account-app"
+        frontEndImageName = "esp53/frontend"
         accountAppImage = ''
+        frontEndImage = ''
     }
     agent any 
     stages {
@@ -77,6 +79,9 @@ pipeline {
                     docker.withRegistry(registry) {
                         accountAppImage = docker.build(accountAppImageName, "./accountModule/AccountApp")
                     }
+                    docker.withRegistry(registry) {
+                        frontEndImage = docker.build(frontEndImageName, "./frontend")
+                    }
                 }
             }
         }
@@ -87,13 +92,17 @@ pipeline {
                     docker.withRegistry(registry) { 
                         accountAppImage.push()
                     }
+                    docker.withRegistry(registry) {
+                        frontEndImage.push()
+                    }
                 } 
             }
         }
 
         stage('Cleaning up local images') { 
             steps { 
-                sh "docker rmi $accountAppImageName" 
+                sh "docker rmi $accountAppImageName"
+                sh "docker rmi $frontendImageName" 
             }
         }
         
