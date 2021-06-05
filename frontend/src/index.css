@@ -615,3 +615,29 @@ Section Settings Alarm info
   margin-top: 2rem;
   text-align: center;
 }
+
+.crypto-favourite-div {
+  background-color: white;
+  border-radius: 2%;
+  max-width: 1170px;
+  margin-top: 1.5em;
+  height: 3em;
+  display: block;
+}
+
+.crypto-favourite-div .crypto-icon-remove {
+  margin-left: 90%;
+}
+
+.crypto-favourite-div .crypto-icon-remove p{
+  text-align: right;
+}
+
+@media screen and (min-width: 992px) {
+  .crypto-favourite-div {
+    display: grid;
+    grid-template-columns: 2fr 2fr;
+    gap: 1rem;
+    align-items: center;
+  }
+}

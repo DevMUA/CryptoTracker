@@ -1,6 +1,7 @@
 package com.ESproject.AccountApp.notifications;
 
 import com.ESproject.AccountApp.Account.Alarm;
+import com.ESproject.AccountApp.Account.FavouriteCoin;
 import com.ESproject.AccountApp.Repository.AccountRepository;
 import com.ESproject.AccountApp.Repository.NotificationRepository;
 import com.ESproject.AccountApp.Request.UserRequest;
@@ -43,7 +44,7 @@ public class SsePushNotificationRestController {
     }
 
     @CrossOrigin
-    @GetMapping("/addAlarm")
+    @PostMapping("/addAlarm")
     public void doAddAlarm(@RequestBody UserRequest request) throws InterruptedException, IOException {
         service.addAlarm(request.getAccount());
     }
@@ -58,6 +59,24 @@ public class SsePushNotificationRestController {
     @PostMapping("/deleteAlarm={id}")
     public void doDeleteAlarm(@RequestBody UserRequest request,@PathVariable int id) throws InterruptedException, IOException {
         service.deleteAlarm(id,request.getAccount());
+    }
+
+    @CrossOrigin
+    @PostMapping("/getFavouriteCoins")
+    public List<FavouriteCoin> doGetFavouriteCoins(@RequestBody UserRequest request) throws InterruptedException, IOException {
+        return service.getFavouriteCoins(request.getAccount());
+    }
+
+    @CrossOrigin
+    @PostMapping("/addFavouriteCoins")
+    public void doAddFavouriteCoin(@RequestBody UserRequest request) throws InterruptedException, IOException {
+        service.addFavouriteCoin(request.getAccount());
+    }
+
+    @CrossOrigin
+    @PostMapping("/deleteFavouriteCoin={id}")
+    public void doDeleteFavouriteCoins(@RequestBody UserRequest request,@PathVariable int id) throws InterruptedException, IOException {
+        service.deleteFavouriteCoin(id,request.getAccount());
     }
 
     @CrossOrigin

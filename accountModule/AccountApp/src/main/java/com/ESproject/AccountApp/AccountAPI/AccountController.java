@@ -39,31 +39,5 @@ public class AccountController {
     @Autowired
     private NotificationRepository notificationRepository;
 
-    @PostConstruct
-    public void init() {
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            executor.shutdown();
-            try {
-                executor.awaitTermination(1, TimeUnit.SECONDS);
-            } catch (InterruptedException e) {
-            }
-        }));
-    }
 
-    @PostMapping("/addAlarm")
-    public void addAlarm(@RequestBody UserRequest request){
-        Optional<Account> account = accountRepository.findAccountByEmail(request.getAccount().getEmail());
-        if(account.isPresent()){
-            account.get().getAlarms().add(request.getAccount().getAlarms().get(0));
-            accountRepository.save(account.get());
-        }
-    }
-
-
-
-    @GetMapping("/getAlarms={email}")
-    public List<Alarm> findAllAlarms(@PathVariable String email){
-        Optional<Account> account = accountRepository.findAccountByEmail(email);
-        return account.get().getAlarms();
-    }
 }
