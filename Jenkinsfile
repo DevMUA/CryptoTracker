@@ -36,7 +36,7 @@ pipeline {
                 java -version
                 mvn -Dmaven.test.failure.ignore=true test
                 '''
-                junit 'target/surefire-reports/*.xml'
+                junit 'accountModule/AccountApp/target/surefire-reports/*.xml'
             }
         }
 
