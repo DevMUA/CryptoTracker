@@ -3,12 +3,14 @@ pipeline {
         registry = "http://192.168.160.48:5000" 
         accountAppImageName = "esp53/account-app"
         frontEndImageName = "esp53/frontend"
-        mlModuleAPIImageName = "esp53/mlmodule-api"
-        mlModuleKafkaImageName = "esp53/mlmodule-kafka"
+        mlModuleImageName = "esp53/mlmodule"
+        //mlModuleAPIImageName = "esp53/mlmodule-api"
+        //mlModuleKafkaImageName = "esp53/mlmodule-kafka"
         accountAppImage = ''
         frontEndImage = ''
-        mlModuleAPIImage = ''
-        mlModuleKafkaImage = ''
+        mlModuleImage = ''
+        //mlModuleAPIImage = ''
+        //mlModuleKafkaImage = ''
     }
     agent any 
     stages {
@@ -47,8 +49,9 @@ pipeline {
                     docker.withRegistry(registry) {
                         accountAppImage = docker.build(accountAppImageName, "./accountModule/AccountApp")
                         frontEndImage = docker.build(frontEndImageName, "./frontend")
-                        mlModuleAPIImage = docker.build(mlModuleAPIImageName, "./mlModule/model_api")
-                        mlModuleKafkaImage = docker.build(mlModuleKafkaImageName, "./mlModule/model_kafka")
+                        //mlModuleAPIImage = docker.build(mlModuleAPIImageName, "./mlModule/model_api")
+                        //mlModuleKafkaImage = docker.build(mlModuleKafkaImageName, "./mlModule/model_kafka")
+                        mlModuleImage = docker.build(mlModuleImageName)
                     }
                 }
             }
@@ -60,8 +63,9 @@ pipeline {
                     docker.withRegistry(registry) { 
                         accountAppImage.push()
                         frontEndImage.push()
-                        mlModuleAPIImage.push()
-                        mlModuleKafkaImage.push()
+                        //mlModuleAPIImage.push()
+                        //mlModuleKafkaImage.push()
+                        mlModuleImage.push()
                     }
                 } 
             }
@@ -70,9 +74,10 @@ pipeline {
         stage('Cleaning up local images') { 
             steps { 
                 sh "docker rmi $accountAppImageName"
-                sh "docker rmi $frontendImageName" 
-                sh "docker rmi $mlModuleAPIImageName"
-                sh "docker rmi $mlModuleKafkaImageName"
+                sh "docker rmi $frontendImageName"
+                sh "docker rmi $mlModuleImageName"
+                //sh "docker rmi $mlModuleAPIImageName"
+                //sh "docker rmi $mlModuleKafkaImageName"
             }
         }
         
