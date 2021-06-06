@@ -51,7 +51,7 @@ pipeline {
                         frontEndImage = docker.build(frontEndImageName, "./frontend")
                         //mlModuleAPIImage = docker.build(mlModuleAPIImageName, "./mlModule/model_api")
                         //mlModuleKafkaImage = docker.build(mlModuleKafkaImageName, "./mlModule/model_kafka")
-                        mlModuleImage = docker.build(mlModuleImageName)
+                        mlModuleImage = docker.build(mlModuleImageName, "./mlModule/consumer_docker")
                     }
                 }
             }
