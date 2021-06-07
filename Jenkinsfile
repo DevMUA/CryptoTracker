@@ -42,6 +42,24 @@ pipeline {
             }
         }
 
+        stage("Test Machine Learning Module") {
+            agent {
+                docker { image "python:3.8-slim-buster" }
+            }
+            steps {
+                sh '''
+                cd mlModule/consumer_docker/
+                pip3 install --upgrade pip
+                pip3 install psycopg2-binary
+                pip3 install -r requirements.txt
+                cd ..
+                python3 test.py
+                '''
+                junit 'mlModule/test-reports/*.xml'
+            }
+
+        }
+
         stage("Build Images") {
             steps {
                 unstash 'app'
