@@ -1,7 +1,7 @@
 pipeline {
     environment {
         registryIP = "192.168.160.48:5000" 
-        registry = "http://192.168.160.48:5000" 
+        registry = "http://$registryIP" 
         accountAppImageName = "esp53/account-app"
         frontEndImageName = "esp53/frontend"
         mlModuleImageName = "esp53/mlmodule"
