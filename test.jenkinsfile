@@ -1,7 +1,7 @@
 pipeline {
     agent any
     stages {
-        stage("Test Maven Projects") {
+        stage("Test Account App Module") {
             agent {
                 docker { image "maven:3.8.1-openjdk-15" }
             }
@@ -12,6 +12,20 @@ pipeline {
                 mvn -Dmaven.test.failure.ignore=true test
                 '''
                 junit 'accountModule/AccountApp/target/surefire-reports/*.xml'
+            }
+        }
+
+        stage("Test Retrieval Module") {
+            agent {
+                docker { image "maven:3.8.1-openjdk-8" }
+            }
+            steps {
+                sh '''
+                cd retrieval
+                java -version
+                mvn -Dmaven.test.failure.ignore=true test
+                '''
+                junit 'retrieval/target/surefire-reports/*.xml'
             }
         }
 
