@@ -1,6 +1,7 @@
 pipeline {
-    environment { 
-        registry = "http://192.168.160.48:5000" 
+    environment {
+        registryIP = "192.168.160.48:5000" 
+        registry = "http://$registryIP" 
         accountAppImageName = "esp53/account-app"
         frontEndImageName = "esp53/frontend"
         mlModuleImageName = "esp53/mlmodule"
@@ -11,6 +12,7 @@ pipeline {
         mlModuleImage = ''
         //mlModuleAPIImage = ''
         //mlModuleKafkaImage = ''
+        sshCommandPrefix = 'ssh -o StrictHostKeyChecking=no esp53@192.168.160.87'
     }
     agent any 
     stages {
@@ -25,20 +27,6 @@ pipeline {
                 mvn -Dmaven.test.skip=true package
                 '''
                 stash includes: '**/target/*.jar', name: 'app'
-            }
-        }
-
-        stage("Test Maven Projects") {
-            agent {
-                docker { image "maven:3.8.1-openjdk-15" }
-            }
-            steps {
-                sh '''
-                cd accountModule/AccountApp
-                java -version
-                mvn -Dmaven.test.failure.ignore=true test
-                '''
-                junit 'accountModule/AccountApp/target/surefire-reports/*.xml'
             }
         }
 
@@ -83,7 +71,14 @@ pipeline {
         
         stage("Deploy to Playground VM") {
             steps {
-                sh "echo deploying"
+                sshagent(credentials: ["esp53_ssh_key"]) {
+                    sh "$sshCommandPrefix docker stop $accountAppImageName || echo container $accountAppImageName not running"
+                    sh "$sshCommandPrefix docker rm $accountAppImageName || echo container $accountAppImageName doesn't exist"
+                    sh "$sshCommandPrefix docker rmi $accountAppImageName || echo image $accountAppImageName doesn't exist"
+                    sh "$sshCommandPrefix docker pull $registryIP/$accountAppImageName"
+                    sh "$sshCommandPrefix docker create -p 53001:9090 --name $accountAppImageName $registryIP/$accountAppImageName"
+                    sh "$sshCommandPrefix docker start $accountAppImageName"
+                }
             }
         }
     }
