@@ -1,8 +1,8 @@
 from kafka import KafkaConsumer, KafkaProducer
 from multiprocessing import Process
-from json import dumps, loads
+from json import dumps, load, loads
 from multiprocessing import Pool
-from model import dummy_prediction
+from model import SequentialOutputModel
 from datetime import datetime
 from datetime import timedelta
 import psycopg2
@@ -55,13 +55,15 @@ def consumeData(topic):
                             dumps(x).encode('utf-8'))
     except:
         print("Error!!")
+
     for msg in consumer:
-        print(msg.value)
         value = msg.value
-        prediction = dummy_prediction(value)
+        model = SequentialOutputModel()
+        model.load(topic)
+        prediction = model.predict(value)
         date = datetime.now()
         crypto = topic
-        prediction_date = datetime.today()+timedelta(days=1)
+        prediction_date = datetime.now()
         prediction_date = prediction_date.strftime("%m/%d/%Y, %H:%M:%S")
 
         conn = psycopg2.connect(
@@ -85,7 +87,7 @@ def consumeData(topic):
         sql = """SELECT prediction FROM cryptos WHERE name='dogecoin' ORDER BY date DESC"""
         cur.execute(sql)
         predictions = cur.fetchall()[0][0]
-        send_predictions(producer, 'dogecoin_prediction', predictions)
+        send_predictions(producer, topic+'_prediction', predictions)
 
 def get_crypto():
     try:
@@ -102,13 +104,11 @@ def get_crypto():
         CRYPTOS = msg.value
 
 if __name__ == '__main__':
-    # try:
-    #     pool_size = len(CRYPTOS)
-    #     pool = Pool(pool_size)
-    #     pool.map(consumeData, CRYPTOS)
-    # except:
-    #     print ("Error: unable")
     create_database()
-    consumeData('dogecoin')
-
+    try:
+        pool_size = len(CRYPTOS)
+        pool = Pool(pool_size)
+        pool.map(consumeData, CRYPTOS)
+    except:
+        print ("Error: unable")
 

@@ -1,146 +1,136 @@
 from numpy.lib.function_base import average
 from pycoingecko import CoinGeckoAPI
-import numpy as np
-import tensorflow as tf
-from tensorflow import keras
-import pandas as pd
+from numpy import array, random
+from keras.models import Sequential, load_model
+from keras.layers import LSTM, Bidirectional, Dropout, Activation
+from keras.layers import Dense
 from sklearn.preprocessing import MinMaxScaler
-from tensorflow.keras.layers import Bidirectional, Dropout, Activation, Dense, LSTM
-from tensorflow.python.keras.layers import CuDNNLSTM
-from tensorflow.keras.models import Sequential
-import matplotlib.pyplot as plt
-from matplotlib import rc
-from pickle import dump, load
-from datetime import datetime
-from random import randint
+from joblib import dump, load
 
 CRYPTO = ['bitcoin', 'dogecoin', 'ethereum']
 cg = CoinGeckoAPI()
 
 def get_cryptos():
     return CRYPTO
+ 
+# split a univariate sequence into samples
+def split_sequence(sequence, n_steps_in, n_steps_out):
+	X, y = list(), list()
+	for i in range(len(sequence)):
+		# find the end of this pattern
+		end_ix = i + n_steps_in
+		out_end_ix = end_ix + n_steps_out
+		# check if we are beyond the sequence
+		if out_end_ix > len(sequence):
+			break
+		# gather input and output parts of the pattern
+		seq_x, seq_y = sequence[i:end_ix], sequence[end_ix:out_end_ix]
+		X.append(seq_x)
+		y.append(seq_y)
+	return array(X), array(y)
 
-def to_sequences(data, seq_len):
-    d = []
 
-    for index in range(len(data) - seq_len):
-        d.append(data[index: index + seq_len])
-
-    return np.array(d)
-
-def preprocess(data_raw, seq_len, train_split):
-
-    data = to_sequences(data_raw, seq_len)
-
-    num_train = int(train_split * data.shape[0])
-
-    X_train = data[:num_train, :-1, :]
-    y_train = data[:num_train, -1, :]
-
-    X_test = data[num_train:, :-1, :]
-    y_test = data[num_train:, -1, :]
+def train_test_split(X, y, ratio=0.8):
+    length = len(X)
+    divider = int(length*ratio)
+    X_train = X[:divider]
+    y_train = y[:divider]
+    X_test = X[divider:]
+    y_test = y[divider:]
 
     return X_train, y_train, X_test, y_test
 
+def scale_data(data, scaler=None):
+    if scaler is None:
+        # create scaler
+        scaler = MinMaxScaler(feature_range=(0,1))
+        scaler.fit(data)
+    else:
+        scaler = scaler
+    # apply transform
+    normalized = scaler.transform(data)
+    return normalized, scaler
+        
 
-def prepare_data(data, scaler_name, SEQ_LEN=100):
-    df = pd.DataFrame(data)
-    df.columns = ['Timestamp', 'Value']
+class SequentialOutputModel():
+    def __init__(self):
+        pass
 
-    scaler = MinMaxScaler()
-    close_price = df.Value.values.reshape(-1, 1)
-    scaled_close = scaler.fit_transform(close_price)
-    dump(scaler, open(scaler_name+'_scaler.pkl', 'wb'))
+    def train(self, raw_seq, n_steps_in, n_steps_out):
+        X, y = split_sequence(raw_seq, n_steps_in, n_steps_out)
 
-    X_train, y_train, _, _ = preprocess(scaled_close, SEQ_LEN, train_split = 1)
-    return X_train, y_train
+        # X_train, y_train, X_test, y_test = train_test_split(X, y)
+        # # reshape from [samples, timesteps] into [samples, timesteps, features]
+        # n_features = 1
+        # X_train, self.scaler = scale_data(X_train)
+        # X_test, _ = scale_data(X_test, self.scaler)
+        # X_train = X_train.reshape((X_train.shape[0], X_train.shape[1], n_features))
+        # X_test = X_test.reshape((X_test.shape[0], X_test.shape[1], n_features))
 
-#X_train, y_train, X_test, y_test = preprocess(scaled_close, SEQ_LEN, train_split = 0.8)
+        # reshape from [samples, timesteps] into [samples, timesteps, features]
+        n_features = 1
+        X, self.scaler = scale_data(X)
+        X = X.reshape((X.shape[0], X.shape[1], n_features))
 
+         # define model
+        model = Sequential()
+        # model.add(LSTM(100, activation='relu', return_sequences=True, input_shape=(n_steps_in, n_features)))
+        # model.add(LSTM(100, activation='relu'))
+        # model.add(Dense(n_steps_out))
+        n_features = 1
+        dropout = 0.2
+        model.add(Bidirectional(LSTM(100, activation='relu', return_sequences=True, input_shape=(n_steps_in, n_features))))
+        model.add(Dropout(rate=dropout))
 
-def train_model(X_train, y_train, dropout=0.2, window_size=99):
+        model.add(Bidirectional(LSTM(100, activation='relu', return_sequences=True)))
+        model.add(Dropout(rate=dropout))
 
-    model = keras.Sequential()
+        model.add(Bidirectional(LSTM(100, activation='relu')))
 
-    model.add(Bidirectional(LSTM(window_size, return_sequences=True),
-                            input_shape=(window_size, X_train.shape[-1])))
-    model.add(Dropout(rate=dropout))
+        model.add(Dense(n_steps_out))
 
-    model.add(Bidirectional(LSTM((window_size * 2), return_sequences=True)))
-    model.add(Dropout(rate=dropout))
+        model.add(Activation('linear'))
+        model.compile(optimizer='adam', loss='mse')
 
-    model.add(Bidirectional(LSTM(window_size, return_sequences=False)))
+        # fit model
+        self.history = model.fit(X, y, epochs=50, verbose=1)
+        self.model = model
 
-    model.add(Dense(units=1))
-
-    model.add(Activation('linear'))
-
-    model.compile(
-        loss='mean_squared_error', 
-        optimizer='adam'
-    )
-
-    BATCH_SIZE = 64
-
-    history = model.fit(
-        X_train, 
-        y_train, 
-        epochs=50, 
-        batch_size=BATCH_SIZE, 
-        shuffle=False,
-        validation_split=0.1
-    )
-
-    return model
-
-def save_model(model, name):
-    model.save(name)
-
-# y_test_inverse = scaler.inverse_transform(y_test)
-# y_hat_inverse = scaler.inverse_transform(y_hat)
-
-def predict(crypto, data):
-    model = keras.models.load_model(crypto)
-    scaler = load(open(crypto+'_scaler.pkl', 'rb'))
-    df = pd.DataFrame(data)
-    df.columns = ['Timestamp', 'Value']
-    close_price = df.Value.values.reshape(-1, 1)
-    scaled_close = scaler.transform(close_price)
-    X_train, _, _, _ = preprocess(scaled_close, 100, train_split = 1)
-    y = model.predict(X_train)
-    prediction = scaler.inverse_transform(y)
-    return prediction
+        return self.model
 
 
-def predict_rest(crypto):
-    prices = cg.get_coin_market_chart_by_id(crypto, 'usd', 'max')
+    def predict(self, data):
+        n_steps_in = len(data)
+        data = array([data])
+        data, _ = scale_data(data, self.scaler)
+        x_input = data.reshape((1, n_steps_in, 1))
+        yhat = self.model.predict(x_input, verbose=0)
+        return yhat
+        
+    def save(self, name):
+        self.model.save('saved_models/'+name)
+        dump(self.scaler, 'saved_models/'+name+'_scaler')
 
-    one = prices['prices'][0]
-    timestamp = int(one[0])
-    dt_object = datetime.fromtimestamp(timestamp/1000)
-    data = prices['prices']
-    print('start prediction')
-    prediction = predict(crypto,data)
-    return prediction
-
-
-def dummy_prediction(data):
-    return average(data)
-
+    def load(self, name):
+        self.model = load_model('saved_models/'+name)
+        self.scaler = load('saved_models/'+name+'_scaler')
 
 
 if __name__ == "__main__":
     for crypto in CRYPTO:
-        prices = cg.get_coin_market_chart_by_id(crypto, 'usd', 'max')
-        one = prices['prices'][0]
-        timestamp = int(one[0])
-        dt_object = datetime.fromtimestamp(timestamp/1000)
+        prices = cg.get_coin_market_chart_by_id('dogecoin', 'usd', 'max')
+        prices = [x[1] for x in prices['prices']]
+        
 
-        print("dt_object =", dt_object)
-        print(prices['prices'][0:5])
-        print(len(prices['prices']))
-        print(50*24)
-        data = prices['prices']
-        X_train, y_train = prepare_data(data, crypto)
-        model = train_model(X_train, y_train)
-        save_model(model, crypto+'_model')
+        model = SequentialOutputModel()
+        model.train(prices, 96, 5)
+        # rand_array = random.randint(150, size=30)
+        # prediction = model.predict(rand_array)
+        # print(prediction)
+        model.save(crypto)
+        # new_model = SequentialOutputModel()
+        # new_model.load('dogecoin')
+        # new_prediction = new_model.predict(rand_array)
+        # print(new_prediction)
+    
+       
