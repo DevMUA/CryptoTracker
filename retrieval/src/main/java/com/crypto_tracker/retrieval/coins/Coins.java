@@ -30,7 +30,7 @@ public class Coins {
     private static final String end_url = "/market_chart?vs_currency=usd&days=30";
     private static final String last_updated = "simple/price?ids=bitcoin&vs_currencies=usd&include_last_updated_at=true";
 
-    @Autowired
+    /*@Autowired
     Coins() throws IOException, JSONException {
         JSONObject json = new JSONObject();
         for(String c: coins){
@@ -59,7 +59,7 @@ public class Coins {
         }
         kafkaController.sendMessage(TOPIC, json.toString());
         System.out.println(json.toString());
-    }
+    }*/
 
     @Scheduled(fixedRate = 1000)
     public void getNews() throws IOException {
