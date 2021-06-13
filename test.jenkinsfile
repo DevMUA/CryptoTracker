@@ -46,7 +46,7 @@ pipeline {
                     pip3 install -r requirements.txt
                     python3 test.py
                     '''
-                    junit 'mlModule/test-reports/*.xml'
+                    junit 'mlModule/consumer_docker/test-reports/*.xml'
                 }
             }
 
