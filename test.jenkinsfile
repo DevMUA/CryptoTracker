@@ -6,12 +6,14 @@ pipeline {
                 docker { image "maven:3.8.1-openjdk-15" }
             }
             steps {
-                sh '''
-                cd accountModule/AccountApp
-                java -version
-                mvn -Dmaven.test.failure.ignore=true test
-                '''
-                junit 'accountModule/AccountApp/target/surefire-reports/*.xml'
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    sh '''
+                    cd accountModule/AccountApp
+                    java -version
+                    mvn -Dmaven.test.failure.ignore=true test
+                    '''
+                    junit 'accountModule/AccountApp/target/surefire-reports/*.xml'
+                }
             }
         }
 
@@ -20,12 +22,14 @@ pipeline {
                 docker { image "maven:3.8.1-openjdk-8" }
             }
             steps {
-                sh '''
-                cd retrieval
-                java -version
-                mvn -Dmaven.test.failure.ignore=true test
-                '''
-                junit 'retrieval/target/surefire-reports/*.xml'
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    sh '''
+                    cd retrieval
+                    java -version
+                    mvn -Dmaven.test.failure.ignore=true test
+                    '''
+                    junit 'retrieval/target/surefire-reports/*.xml'
+                }
             }
         }
 
@@ -34,14 +38,16 @@ pipeline {
                 docker { image "python:3.8-slim-buster" }
             }
             steps {
-                sh '''
-                cd mlModule/consumer_docker/
-                pip3 install --upgrade pip
-                pip3 install psycopg2-binary
-                pip3 install -r requirements.txt
-                python3 ../test.py
-                '''
-                junit 'mlModule/test-reports/*.xml'
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    sh '''
+                    cd mlModule/consumer_docker/
+                    pip3 install --upgrade pip
+                    pip3 install psycopg2-binary
+                    pip3 install -r requirements.txt
+                    python3 test.py
+                    '''
+                    junit 'mlModule/test-reports/*.xml'
+                }
             }
 
         }
