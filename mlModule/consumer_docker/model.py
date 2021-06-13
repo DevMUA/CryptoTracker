@@ -1,9 +1,9 @@
 from numpy.lib.function_base import average
 from pycoingecko import CoinGeckoAPI
 from numpy import array, random
-from keras.models import Sequential, load_model
-from keras.layers import LSTM, Bidirectional, Dropout, Activation
-from keras.layers import Dense
+from tensorflow.keras.models import Sequential, load_model
+from tensorflow.keras.layers import LSTM, Bidirectional, Dropout, Activation
+from tensorflow.keras.layers import Dense
 from sklearn.preprocessing import MinMaxScaler
 from joblib import dump, load
 
