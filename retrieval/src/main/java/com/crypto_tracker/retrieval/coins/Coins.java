@@ -1,9 +1,6 @@
 package com.crypto_tracker.retrieval.coins;
 
 import com.crypto_tracker.retrieval.kafka.KafkaController;
-import jdk.nashorn.internal.parser.JSONParser;
-import netscape.javascript.JSObject;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +26,6 @@ public class Coins {
 
     private String coins[] = new String[] {"bitcoin","ethereum","cardano"};
     private String str_coins = "bitcoin,ethereum,cardano";
-    private String currencies = "btc,eth,ltc,bch,bnb,eos,xrp,xlm,link,dot,yfi,usd,aed,ars,aud,bdt,bhd,bmd,brl,cad,chf,clp,cny,czk,dkk,eur,gbp,hkd,huf,idr,ils,inr,jpy,krw,kwd,lkr,mmk,mxn,myr,ngn,nok,nzd,php,pkr,pln,rub,sar,sek,sgd,thb,try,twd,uah,vef,vnd,zar,xdr,xag,xau,bits,sats";
     private static final String base_url = "https://api.coingecko.com/api/v3/";
     private static final String end_url = "/market_chart?vs_currency=usd&days=30";
     private static final String last_updated = "simple/price?ids=bitcoin&vs_currencies=usd&include_last_updated_at=true";
