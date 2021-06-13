@@ -23,7 +23,7 @@ pipeline {
                 sh '''
                 cd retrieval
                 java -version
-                mvn -Dmaven.test.failure.ignore=true clean install test
+                mvn -Dmaven.test.failure.ignore=true test
                 '''
                 junit 'retrieval/target/surefire-reports/*.xml'
             }
