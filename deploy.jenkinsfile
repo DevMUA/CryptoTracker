@@ -5,18 +5,20 @@ pipeline {
         accountAppImageName = "esp53/account-app"
         frontEndImageName = "esp53/frontend"
         mlModuleImageName = "esp53/mlmodule"
+        retrievalImageName = "esp53/retrieval"
         //mlModuleAPIImageName = "esp53/mlmodule-api"
         //mlModuleKafkaImageName = "esp53/mlmodule-kafka"
         accountAppImage = ''
         frontEndImage = ''
         mlModuleImage = ''
+        retrievalImage = ''
         //mlModuleAPIImage = ''
         //mlModuleKafkaImage = ''
         sshCommandPrefix = 'ssh -o StrictHostKeyChecking=no esp53@192.168.160.87'
     }
     agent any 
     stages {
-        stage("Build Maven Projects") {
+        stage("Build Account App Module") {
             agent {
                 docker { image "maven:3.8.1-openjdk-15" }
             }
@@ -26,13 +28,29 @@ pipeline {
                 java -version
                 mvn -Dmaven.test.skip=true package
                 '''
-                stash includes: '**/target/*.jar', name: 'app'
+                stash includes: '**/target/*.jar', name: 'accountApp'
             }
+        }
+
+        stage("Build Retrieval Module") {
+            agent {
+                docker { image "maven:3.8.1-openjdk-8" }
+            }
+            steps {
+                sh '''
+                cd retrieval
+                java -version
+                mvn -Dmaven.test.skip=true package
+                '''
+                stash includes: '**/target/*.jar', name: 'retrievalApp'
+            }
+
         }
 
         stage("Build Images") {
             steps {
-                unstash 'app'
+                unstash 'accountApp'
+                unstash 'retrievalApp'
                 script {
                     docker.withRegistry(registry) {
                         accountAppImage = docker.build(accountAppImageName, "./accountModule/AccountApp")
@@ -78,6 +96,20 @@ pipeline {
                     sh "$sshCommandPrefix docker pull $registryIP/$accountAppImageName"
                     sh "$sshCommandPrefix docker create -p 53001:9090 --name $accountAppImageName $registryIP/$accountAppImageName"
                     sh "$sshCommandPrefix docker start $accountAppImageName"
+
+                    sh "$sshCommandPrefix docker stop $frontendImageName || echo container $frontendImageName not running"
+                    sh "$sshCommandPrefix docker rm $frontendImageName || echo container $frontendImageName doesn't exist"
+                    sh "$sshCommandPrefix docker rmi $frontendImageName || echo image $frontendImageName doesn't exist"
+                    sh "$sshCommandPrefix docker pull $registryIP/$frontendImageName"
+                    sh "$sshCommandPrefix docker create -p 53002:9090 --name $frontendImageName $registryIP/$frontendImageName"
+                    sh "$sshCommandPrefix docker start $frontendImageName"
+
+                    sh "$sshCommandPrefix docker stop $mlModuleImageName || echo container $mlModuleImageName not running"
+                    sh "$sshCommandPrefix docker rm $mlModuleImageName || echo container $mlModuleImageName doesn't exist"
+                    sh "$sshCommandPrefix docker rmi $mlModuleImageName || echo image $mlModuleImageName doesn't exist"
+                    sh "$sshCommandPrefix docker pull $registryIP/$mlModuleImageName"
+                    sh "$sshCommandPrefix docker create -p 53001:9090 --name $mlModuleImageName $registryIP/$mlModuleImageName"
+                    sh "$sshCommandPrefix docker start $mlModuleImageName"
                 }
             }
         }
