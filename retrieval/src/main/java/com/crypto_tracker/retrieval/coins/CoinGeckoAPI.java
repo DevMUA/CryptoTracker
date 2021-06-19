@@ -6,6 +6,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
@@ -50,6 +51,39 @@ public class CoinGeckoAPI {
         }
         //coinList.get(0).getDescription().getEn();
         return coinList;
+    }
+
+    public List<GraphicalCoinInformation> getGraphPoints(){
+        List<CoinListObject> coinToCallList = getCoinList();
+        List<GraphicalCoinInformation> graphPoints = new LinkedList<>();
+        for(int i = 0 ; i < coinToCallList.size(); i++){
+            System.out.println("Calling for coin " + coinToCallList.get(i).getName());
+            ResponseEntity<GraphPoint> response = restTemplate.getForEntity(URL+String.format("coins/%s/market_chart?vs_currency=usd&days=30",coinToCallList.get(i).getId()),GraphPoint.class);
+            GraphicalCoinInformation newCoin = new GraphicalCoinInformation();
+            newCoin.setId(coinToCallList.get(i).getName());
+            newCoin.setPlotPoints(parseGraphInfo(response.getBody()));
+            graphPoints.add(newCoin);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        return graphPoints;
+    }
+
+    private List<GraphParsedInfo> parseGraphInfo(GraphPoint point){
+        List<GraphParsedInfo> listParsed = new LinkedList<>();
+
+        for(int i = 0; i < point.getPrices().length; i++) {
+            GraphParsedInfo newGraphPoint = new GraphParsedInfo();
+            newGraphPoint.setTime(Long.valueOf(point.getPrices()[i][0]));
+            newGraphPoint.setValue(Float.valueOf(point.getPrices()[i][1]));
+            listParsed.add(newGraphPoint);
+        }
+
+        return listParsed;
+
     }
 
 }
