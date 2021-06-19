@@ -58,7 +58,7 @@ public class News {
                 in.close();
                 //JSONObject jsonObj = new JSONObject(content.toString());
                 //System.out.println(jsonObj.toString(2));
-                kafkaController.sendMessage(TOPIC, content.toString());
+                //kafkaController.sendMessage(TOPIC, content.toString());
                 System.out.println(content.toString());
             }else{
                 System.out.println(String.format("error: %d", status));

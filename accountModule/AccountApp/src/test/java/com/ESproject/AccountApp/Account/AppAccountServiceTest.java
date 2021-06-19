@@ -1,7 +1,6 @@
 package com.ESproject.AccountApp.Account;
 
 import com.ESproject.AccountApp.AccountAppApplication;
-import com.ESproject.AccountApp.configuration.H2TestProfileJPAConfig;
 import com.ESproject.AccountApp.registration.token.ConfirmationTokenRepository;
 import com.ESproject.AccountApp.registration.token.ConfirmationTokenService;
 import org.apache.zookeeper.Op;
