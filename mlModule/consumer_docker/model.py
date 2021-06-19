@@ -107,13 +107,13 @@ class SequentialOutputModel():
         yhat = self.model.predict(x_input, verbose=0)
         return yhat
         
-    def save(self, name):
-        self.model.save('saved_models/'+name)
-        dump(self.scaler, 'saved_models/'+name+'_scaler')
+    def save(self, name, path='saved_models/'):
+        self.model.save(path+name)
+        dump(self.scaler, path+name+'_scaler')
 
-    def load(self, name):
-        self.model = load_model('saved_models/'+name)
-        self.scaler = load('saved_models/'+name+'_scaler')
+    def load(self, name, path='saved_models/'):
+        self.model = load_model(path+name)
+        self.scaler = load(path+name+'_scaler')
 
 
 if __name__ == "__main__":
