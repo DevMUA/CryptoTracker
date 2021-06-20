@@ -21,7 +21,7 @@ public class Alarm {
     private int aid;
     private String coin;
     private String condition;
-    private int value;
+    private long value;
     private boolean email;
     private boolean alert;
 }

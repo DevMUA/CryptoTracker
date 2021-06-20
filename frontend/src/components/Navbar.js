@@ -24,7 +24,6 @@ const Navbar = () => {
   let eventSource = undefined;
   const history = useHistory();
 
-  console.log(localStorage.getItem("notifications"));
   if (localStorage.getItem("notifications") === null)
     localStorage.setItem("notifications", JSON.stringify([]));
 
@@ -35,10 +34,7 @@ const Navbar = () => {
     //var isListening = localStorage.getItem("isListening");
     //var es = localStorage.getItem("eventSource");
     var emailToUse = localStorage.getItem("email");
-    console.log(emailToUse);
-    console.log("Not signed In");
     if (emailToUse === "Not Signed In") return;
-    console.log("listening with email " + emailToUse);
     eventSource = new EventSource(
       "http://localhost:9090/notification=" + emailToUse
     );

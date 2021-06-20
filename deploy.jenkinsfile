@@ -6,12 +6,14 @@ pipeline {
         frontEndImageName = "esp53/frontend"
         mlModuleImageName = "esp53/mlmodule"
         retrievalImageName = "esp53/retrieval"
+        historyImageName = "esp53/history"
         //mlModuleAPIImageName = "esp53/mlmodule-api"
         //mlModuleKafkaImageName = "esp53/mlmodule-kafka"
         accountAppImage = ''
         frontEndImage = ''
         mlModuleImage = ''
         retrievalImage = ''
+        historyImage = ''
         //mlModuleAPIImage = ''
         //mlModuleKafkaImage = ''
         sshCommandPrefix = 'ssh -o StrictHostKeyChecking=no esp53@192.168.160.87'
@@ -29,6 +31,20 @@ pipeline {
                 mvn -Dmaven.test.skip=true package
                 '''
                 stash includes: '**/target/*.jar', name: 'accountApp'
+            }
+        }
+
+        stage("Build History Module") {
+            agent {
+                docker { image "maven:3.8.1-openjdk-11" }
+            }
+            steps {
+                sh '''
+                cd registry
+                java -version
+                mvn -Dmaven.test.skip=true package
+                '''
+                stash includes '**/target/*.jar', name: 'historyApp'
             }
         }
 
@@ -51,6 +67,7 @@ pipeline {
             steps {
                 unstash 'accountApp'
                 unstash 'retrievalApp'
+                unstash 'historyApp'
                 script {
                     docker.withRegistry(registry) {
                         accountAppImage = docker.build(accountAppImageName, "./accountModule/AccountApp")
@@ -58,6 +75,8 @@ pipeline {
                         //mlModuleAPIImage = docker.build(mlModuleAPIImageName, "./mlModule/model_api")
                         //mlModuleKafkaImage = docker.build(mlModuleKafkaImageName, "./mlModule/model_kafka")
                         mlModuleImage = docker.build(mlModuleImageName, "./mlModule/consumer_docker")
+                        retrievalImage = docker.build(retrievalImageName, "./retrieval")
+                        historyImage = docker.build(historyImageName, "./history")
                     }
                 }
             }
@@ -72,6 +91,8 @@ pipeline {
                         //mlModuleAPIImage.push()
                         //mlModuleKafkaImage.push()
                         mlModuleImage.push()
+                        retrievalImage.push()
+                        historyImage.push()
                     }
                 } 
             }
@@ -82,6 +103,8 @@ pipeline {
                 sh "docker rmi $accountAppImageName"
                 sh "docker rmi $frontendImageName"
                 sh "docker rmi $mlModuleImageName"
+                sh "docker rmi $retrievalImageName"
+                sh "docker rmi $historyImageName"
                 //sh "docker rmi $mlModuleAPIImageName"
                 //sh "docker rmi $mlModuleKafkaImageName"
             }
@@ -108,8 +131,22 @@ pipeline {
                     sh "$sshCommandPrefix docker rm $mlModuleImageName || echo container $mlModuleImageName doesn't exist"
                     sh "$sshCommandPrefix docker rmi $mlModuleImageName || echo image $mlModuleImageName doesn't exist"
                     sh "$sshCommandPrefix docker pull $registryIP/$mlModuleImageName"
-                    sh "$sshCommandPrefix docker create -p 53001:9090 --name $mlModuleImageName $registryIP/$mlModuleImageName"
+                    sh "$sshCommandPrefix docker create -p 53003:9090 --name $mlModuleImageName $registryIP/$mlModuleImageName"
                     sh "$sshCommandPrefix docker start $mlModuleImageName"
+
+                    sh "$sshCommandPrefix docker stop $retrievalImageName || echo container $retrievalImageName not running"
+                    sh "$sshCommandPrefix docker rm $retrievalImageName || echo container $retrievalImageName doesn't exist"
+                    sh "$sshCommandPrefix docker rmi $retrievalImageName || echo image $retrievalImageName doesn't exist"
+                    sh "$sshCommandPrefix docker pull $registryIP/$retrievalImageName"
+                    sh "$sshCommandPrefix docker create -p 53004:9090 --name $retrievalImageName $registryIP/$retrievalImageName"
+                    sh "$sshCommandPrefix docker start $retrievalImageName"
+
+                    sh "$sshCommandPrefix docker stop $historyImageName || echo container $historyImageName not running"
+                    sh "$sshCommandPrefix docker rm $historyImageName || echo container $historyImageName doesn't exist"
+                    sh "$sshCommandPrefix docker rmi $historyImageName || echo image $historyImageName doesn't exist"
+                    sh "$sshCommandPrefix docker pull $registryIP/$historyImageName"
+                    sh "$sshCommandPrefix docker create -p 53005:9090 --name $historyImageName $registryIP/$historyImageName"
+                    sh "$sshCommandPrefix docker start $historyImageName"
                 }
             }
         }

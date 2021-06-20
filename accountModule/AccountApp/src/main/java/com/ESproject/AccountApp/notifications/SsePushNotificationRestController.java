@@ -84,4 +84,6 @@ public class SsePushNotificationRestController {
     public void doCreateFake(@RequestBody UserRequest request) throws InterruptedException, IOException {
         service.createFake(request.getAccount());
     }
+
+
 }
