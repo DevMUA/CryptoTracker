@@ -5,8 +5,6 @@ import javax.persistence.Id;
 
 @Entity
 public class Author {
-    @Id
-    private Long id;
     private String name;
 
     public Author(String name) {
@@ -23,14 +21,5 @@ public class Author {
 
     public String getName() {
         return name;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    @Id
-    public Long getId() {
-        return id;
     }
 }

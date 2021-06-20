@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.uti.Set;
 
 @CrossOrigin("*")
 @RestController
@@ -39,10 +40,11 @@ public class NewsController {
 
     @GetMapping("/api/news/{id}/{coins}")
     public List<New> getNews(@PathVariable int id, @PathVariable String[] coins){
-        List<New> news = new ArrayList<>();
+        Set<New> setN = new HashSet<>();
         for(String s: coins){
-            news.addAll(newsRep.findByTitleContains(s));
+            setN.addAll(newsRep.findByTitleContains(s));
         }
+        List<New> news = new ArrayList<>(setN);
         return news;
     }
 
