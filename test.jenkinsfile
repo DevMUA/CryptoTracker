@@ -33,6 +33,22 @@ pipeline {
             }
         }
 
+        stage("Test History Module") {
+            agent {
+                docker { image "maven:3.8.1-openjdk-11"}
+            }
+            steps {
+                catchError(buildResult: 'SUCESS', stageResult: 'FAILURE') {
+                    sh '''
+                    cd history
+                    java -version
+                    mvn -Dmaven.test.failure.ignore=true test
+                    '''
+                    junit 'history/target/surefire-reports/*.xml'
+                }
+            }
+        }
+
         stage("Test Machine Learning Module") {
             agent {
                 docker { image "python:3.8-slim-buster" }
