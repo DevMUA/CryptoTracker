@@ -6,4 +6,4 @@ RUN pip3 install psycopg2-binary
 RUN pip3 install -r requirements.txt
 COPY . .
 EXPOSE 8000
-CMD [ "python3", "test.py"]
+CMD [ "python3", "consumer.py"]
