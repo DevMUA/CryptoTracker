@@ -38,7 +38,7 @@ pipeline {
                 docker { image "maven:3.8.1-openjdk-11"}
             }
             steps {
-                catchError(buildResult: 'SUCESS', stageResult: 'FAILURE') {
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                     sh '''
                     cd history
                     java -version
