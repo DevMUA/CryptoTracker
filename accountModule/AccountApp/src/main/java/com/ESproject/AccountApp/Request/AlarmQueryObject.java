@@ -1,23 +1,16 @@
-package com.ESproject.AccountApp.Account;
+package com.ESproject.AccountApp.Request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@Entity
-public class Alarm {
+public class AlarmQueryObject {
 
-    @Id
-    @GeneratedValue
     private int aid;
     private String coin;
     private String condition;

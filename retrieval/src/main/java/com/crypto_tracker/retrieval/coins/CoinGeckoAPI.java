@@ -39,7 +39,7 @@ public class CoinGeckoAPI {
     public List<Coin> getCoins(){
         List<CoinListObject> coinToCallList = getCoinList();
         List<Coin> coinList = new LinkedList<Coin>();
-        for(int i = 0 ; i < coinToCallList.size(); i++){
+        for(int i = 0 ; i < 20/*coinToCallList.size()*/; i++){
             System.out.println("Calling for coin " + coinToCallList.get(i).getName());
             ResponseEntity<Coin> response = restTemplate.getForEntity(URL+String.format("coins/%s?tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false",coinToCallList.get(i).getId()),Coin.class);
             coinList.add(response.getBody());
@@ -56,7 +56,7 @@ public class CoinGeckoAPI {
     public List<GraphicalCoinInformation> getGraphPoints(){
         List<CoinListObject> coinToCallList = getCoinList();
         List<GraphicalCoinInformation> graphPoints = new LinkedList<>();
-        for(int i = 0 ; i < coinToCallList.size(); i++){
+        for(int i = 0 ; i < 20/*coinToCallList.size()*/; i++){
             System.out.println("Calling for coin " + coinToCallList.get(i).getName());
             ResponseEntity<GraphPoint> response = restTemplate.getForEntity(URL+String.format("coins/%s/market_chart?vs_currency=usd&days=30",coinToCallList.get(i).getId()),GraphPoint.class);
             GraphicalCoinInformation newCoin = new GraphicalCoinInformation();

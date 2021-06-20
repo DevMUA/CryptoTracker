@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties
 public class MarketCap {
 
-    private int usd;
+    private long usd;
 }

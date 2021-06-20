@@ -121,17 +121,15 @@ export default function AlarmCreation() {
                 className={classes.formControl}
                 style={{ minWidth: 400 }}
               >
-                <InputLabel id="demo-simple-select-label">Crypto</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={coin}
-                  onChange={handleChangeCoin}
+                <form
+                  className={classes.root}
+                  noValidate
+                  autoComplete="off"
                   autoWidth
+                  onChange={handleChangeCoin}
                 >
-                  <MenuItem value={"Bitcoin"}>Bitcoin</MenuItem>
-                  <MenuItem value={"Etherium"}>Etherium</MenuItem>
-                </Select>
+                  <TextField id="standard-basic" label="Standard" />
+                </form>
               </FormControl>
               <FormControl
                 className={classes.formControl}

@@ -6,11 +6,15 @@ import axios from "axios";
 
 export default function CryptoCurrency({
   id,
+  symbol,
   name,
-  change24h,
-  price,
-  marketcap,
-  volume24h,
+  image,
+  description,
+  circulating_supply,
+  price_change_percentage_24,
+  total_supply,
+  market_cap_usd,
+  current_price,
   icon,
 }) {
   const [iconHover, setIconHover] = useState(false);
@@ -64,15 +68,16 @@ export default function CryptoCurrency({
   }
   return (
     <div
-      onClick={(e) => RedirectToCoin(e, name, history)}
+      onClick={(e) => RedirectToCoin(e, id, history)}
       className="crypto-currency-div"
     >
-      <div className="crypto-id">{id || "ID_MISS"}</div>
-      <div className="crypto-name">{name || "NAME_MISS"}</div>
-      <div className="crypto-24h-change">{change24h || "24_MISS"}</div>
-      <div className="crypto-price">{price || "PRICE_MISS"}</div>
-      <div className="crypto-market-cap">{marketcap || "MARKET_CAP_MISS"}</div>
-      <div className="crypto-volume-24h">{volume24h || "VOLUME_MISS"}</div>
+      <div className="crypto-id">{id || "--"}</div>
+      <div className="crypto-name">{name || "--"}</div>
+      <div className="crypto-24h-change">
+        {price_change_percentage_24 || "--"}
+      </div>
+      <div className="crypto-price">{current_price || "--"}</div>
+      <div className="crypto-market-cap">{market_cap_usd || "--"}</div>
       <div className="crypto-icon">
         <p
           onClick={OnFavourite}

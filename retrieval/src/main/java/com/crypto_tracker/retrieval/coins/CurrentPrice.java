@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties
 public class CurrentPrice {
 
-    private int usd;
+    private long usd;
 }

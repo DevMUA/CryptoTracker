@@ -14,7 +14,7 @@ public class MarketData {
     private CurrentPrice current_price;
     private MarketCap market_cap;
     private float price_change_percentage_24h;
-    private int total_supply;
-    private int max_supply;
-    private int circulating_supply;
+    private long total_supply;
+    private long max_supply;
+    private long circulating_supply;
 }
