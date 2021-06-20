@@ -1,7 +1,8 @@
-/*package com.news.kafka.kafka_news.jpa;
+package com.crypto_tracker.news.repository.kafka;
 
+import com.crypto_tracker.news.repository.jpa.*;
+import com.crypto_tracker.news.repository.repos.NewsRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.news.kafka.kafka_news.repository.NewsRepository;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,6 @@ public class KafkaConsumer {
         this.newsRep = newsRep;
     }
 
-
     @KafkaListener(topics= "FreeNews",groupId = "news")
     void consume(String news){
         try{
@@ -34,8 +34,8 @@ public class KafkaConsumer {
     private void parseNews(JSONObject json) throws JSONException, IOException {
         ObjectMapper mapper = new ObjectMapper();
         New news[] = mapper.readValue(json.getJSONArray("articles").toString(), New[].class);
-        for(New obj: news){
+        for (New obj : news) {
             newsRep.save(obj);
         }
     }
-}*/
+}
