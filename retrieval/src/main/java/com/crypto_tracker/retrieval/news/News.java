@@ -56,9 +56,6 @@ public class News {
                     content.append(inputLine);
                 }
                 in.close();
-                //JSONObject jsonObj = new JSONObject(content.toString());
-                //System.out.println(jsonObj.toString(2));
-                //kafkaController.sendMessage(TOPIC, content.toString());
                 System.out.println(content.toString());
             }else{
                 System.out.println(String.format("error: %d", status));
@@ -66,12 +63,4 @@ public class News {
             con.disconnect();
         }
     }
-    /*Map<String, String> parameters = new HashMap<>();
-        parameters.put("q", "Bitcoin");
-        parameters.put("lang", "en");
-        con.setDoOutput(true);
-        DataOutputStream out = new DataOutputStream(con.getOutputStream());
-        out.writeBytes(ParameterStringBuilder.getParamsString(parameters));
-        out.flush();
-        out.close();*/
 }
