@@ -1,4 +1,4 @@
-/*package com.crypto_tracker.retrieval.news;
+package com.crypto_tracker.retrieval.news;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
@@ -31,4 +31,4 @@ public class New {
     private double _score;
     private String _id;
 
-}*/
+}
