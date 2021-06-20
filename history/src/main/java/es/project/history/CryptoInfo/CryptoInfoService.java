@@ -1,5 +1,6 @@
 package es.project.history.CryptoInfo;
 
+import es.project.history.Kafka.KafkaController;
 import es.project.history.Repository.CryptoInfoRepository;
 import es.project.history.Repository.GraphicalCoinInformationRepository;
 import es.project.history.Requests.AlarmQueryObject;
@@ -7,6 +8,8 @@ import es.project.history.Requests.AlarmResponseObject;
 import es.project.history.Requests.AlarmTrueKafkaObject;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -14,7 +17,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@EnableScheduling
 public class CryptoInfoService {
+
+    @Autowired
+    private KafkaController kafkaController;
 
     @Autowired
     private CryptoInfoRepository cryptoInfoRepository;
@@ -97,6 +104,13 @@ public class CryptoInfoService {
         else{
             return false;
         }
+    }
+
+    @Scheduled(fixedRate = 60000)
+    private void RetrieveInformationToMLModule(){
+        List<GraphicalCoinInformation> list = graphicalCoinInformationRepository.findAll();
+
+        kafkaController.sendMessage3("MLCoinInfo",list);
     }
 
 }
