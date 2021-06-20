@@ -10,7 +10,7 @@ from model import SequentialOutputModel
 unittest.TestLoader.sortTestMethodsUsing = None
 class PipelineTest(unittest.TestCase):
     def setUp(self) -> None:
-        self.path = 'mlModule/consumer_docker/'
+        self.path = ''
 
     def test_dummy(self):
         self.assertEqual(1,1) 
