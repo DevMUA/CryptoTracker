@@ -6,6 +6,7 @@ from tensorflow.python.keras.layers import LSTM, Bidirectional, Dropout, Activat
 from tensorflow.python.keras.layers import Dense
 from sklearn.preprocessing import MinMaxScaler
 from joblib import dump, load
+from statistics import mean, stdev
 
 CRYPTO = ['bitcoin', 'dogecoin', 'ethereum']
 cg = CoinGeckoAPI()
@@ -93,7 +94,7 @@ class SequentialOutputModel():
         model.compile(optimizer='adam', loss='mse')
 
         # fit model
-        self.history = model.fit(X, y, epochs=50, verbose=1)
+        self.history = model.fit(X, y, epochs=5, verbose=1)
         self.model = model
 
         return self.model
@@ -107,30 +108,42 @@ class SequentialOutputModel():
         yhat = self.model.predict(x_input, verbose=0)
         return yhat
         
-    def save(self, name, path='saved_models/'):
-        self.model.save(path+name)
-        dump(self.scaler, path+name+'_scaler')
+    def save(self, name):
+        self.model.save('saved_models/'+name+'.h5')
+        dump(self.scaler, 'saved_models/'+name+'_scaler')
 
-    def load(self, name, path='saved_models/'):
-        self.model = load_model(path+name)
-        self.scaler = load(path+name+'_scaler')
+    def load(self, name):
+        self.model = load_model('saved_models/'+name+'.h5')
+        self.scaler = load('saved_models/'+name+'_scaler')
+
+    
+    def dummy_prediction(self, data):
+        prices = [x[1] for x in data]
+        print(data)
+        last_timestamp = data[-1][0]
+        data_mean = mean(prices)
+        data_std = stdev(prices)
+        predictions = []
+        for x in range(0,24):
+            predictions.append([last_timestamp + x*3600, data_mean+data_std*random.randint(1,x+2)])
+        return(predictions)
 
 
 if __name__ == "__main__":
     for crypto in CRYPTO:
-        prices = cg.get_coin_market_chart_by_id('dogecoin', 'usd', 'max')
-        prices = [x[1] for x in prices['prices']]
+        prices = cg.get_coin_market_chart_by_id(crypto, 'usd', 'max')
+        #prices = [x[1] for x in prices['prices']]
         
-
         model = SequentialOutputModel()
-        model.train(prices, 96, 5)
-        # rand_array = random.randint(150, size=30)
+        predictions = model.dummy_prediction(prices['prices'])
+        print(predictions)
+        # model = SequentialOutputModel()
+        # model.train(prices, 96, 5)
+        # rand_array = random.randint(150, size=96)
         # prediction = model.predict(rand_array)
         # print(prediction)
-        model.save(crypto)
+        # model.save(crypto)
         # new_model = SequentialOutputModel()
-        # new_model.load('dogecoin')
+        # new_model.load('bitcoin')
         # new_prediction = new_model.predict(rand_array)
         # print(new_prediction)
-    
-       

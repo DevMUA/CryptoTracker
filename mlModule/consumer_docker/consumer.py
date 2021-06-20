@@ -57,37 +57,41 @@ def consumeData(topic):
         print("Error!!")
 
     for msg in consumer:
-        value = msg.value
-        model = SequentialOutputModel()
-        model.load(topic)
-        prediction = model.predict(value)
-        date = datetime.now()
-        crypto = topic
-        prediction_date = datetime.now()
-        prediction_date = prediction_date.strftime("%m/%d/%Y, %H:%M:%S")
+        predictions_list = []
+        for coin in msg.value:
+            name = coin[0]
+            prices = coin[1]
+            model = SequentialOutputModel()
+            # model.load(topic)
+            prediction = model.dummy_prediction(prices)
+            date = datetime.now()
+            crypto = name
+            prediction_date = datetime.now()
+            prediction_date = prediction_date.strftime("%m/%d/%Y, %H:%M:%S")
 
-        conn = psycopg2.connect(
-        host="192.168.160.18",
-        database="postgres",
-        user="postgres",
-        password="postgres")
+            conn = psycopg2.connect(
+            host="192.168.160.18",
+            database="postgres",
+            user="postgres",
+            password="postgres")
 
-        cur = conn.cursor()
+            cur = conn.cursor()
 
-        sql = """INSERT INTO cryptos (name, date, prediction) VALUES (%s, %s, %s)"""
+            sql = """INSERT INTO cryptos (name, date, prediction) VALUES (%s, %s, %s)"""
 
-        cur.execute(sql, (crypto, date, dumps({prediction_date: prediction})))
+            cur.execute(sql, (crypto, date, dumps({prediction_date: prediction})))
 
-        conn.commit()
+            conn.commit()
 
-        cur.close()
+            cur.close()
+            predictions_list.append([crypto, prediction])
+            # cur = conn.cursor()
 
-        cur = conn.cursor()
+            # sql = """SELECT prediction FROM cryptos WHERE name='dogecoin' ORDER BY date DESC"""
+            # cur.execute(sql)
+            # predictions = cur.fetchall()[0][0]
 
-        sql = """SELECT prediction FROM cryptos WHERE name='dogecoin' ORDER BY date DESC"""
-        cur.execute(sql)
-        predictions = cur.fetchall()[0][0]
-        send_predictions(producer, topic+'_prediction', predictions)
+        send_predictions(producer, 'MLPredictions', predictions_list)
 
 def get_crypto():
     try:
@@ -105,10 +109,11 @@ def get_crypto():
 
 if __name__ == '__main__':
     create_database()
-    try:
-        pool_size = len(CRYPTOS)
-        pool = Pool(pool_size)
-        pool.map(consumeData, CRYPTOS)
-    except:
-        print ("Error: unable")
+    # try:
+    #     pool_size = len(CRYPTOS)
+    #     pool = Pool(pool_size)
+    #     pool.map(consumeData, CRYPTOS)
+    # except:
+    #     print ("Error: unable")
+    consumeData('MLCoinInfo')
 
