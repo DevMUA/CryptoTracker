@@ -31,6 +31,12 @@ public class NewsController {
     @Autowired
     public NewsController(NewsRepository newsRep){ this.newsRep = newsRep; }
 
+    @GetMapping("/api/news/all")
+    public ArrayList<New> getAllNews(){
+        ArrayList<New> news = new ArrayList<>(newsRep.findAll());
+        return news;
+    }
+
     @GetMapping("/api/news/{id}/{coins}")
     public List<New> getNews(@PathVariable int id, @PathVariable String[] coins){
         List<New> news = new ArrayList<>();

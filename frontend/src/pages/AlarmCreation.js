@@ -128,7 +128,7 @@ export default function AlarmCreation() {
                   autoWidth
                   onChange={handleChangeCoin}
                 >
-                  <TextField id="standard-basic" label="Standard" />
+                  <TextField id="standard-basic" label="CryptoCoin" />
                 </form>
               </FormControl>
               <FormControl

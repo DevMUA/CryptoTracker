@@ -6,6 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.List;
 
 public interface NewsRepository extends CrudRepository<New, String> {
+    List<New> findAll();
     List<New> findByLanguage(String language);
     List<New> findByTopic(String topic);
     List<New> findByCountry(String country);
