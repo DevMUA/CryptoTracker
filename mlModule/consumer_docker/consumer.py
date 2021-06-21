@@ -19,7 +19,7 @@ def send_predictions(producer, name, predictions):
 
 def create_database():
     conn = psycopg2.connect(
-    host="192.168.160.18",
+    host=POSTGRES_SERVER,
     database="postgres",
     user="postgres",
     password="postgres")
