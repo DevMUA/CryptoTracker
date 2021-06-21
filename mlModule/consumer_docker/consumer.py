@@ -57,18 +57,22 @@ def consumeData(topic):
         print("Error!!")
 
     for msg in consumer:
+        print("ML module get message")
         predictions_list = []
         for coin in msg.value:
             name = coin[0]
             prices = coin[1]
+            print("coin name ", name)
             model = SequentialOutputModel()
             # model.load(topic)
+            print("Start predictions")
             prediction = model.dummy_prediction(prices)
+            print(prediction)
             date = datetime.now()
             crypto = name
             prediction_date = datetime.now()
             prediction_date = prediction_date.strftime("%m/%d/%Y, %H:%M:%S")
-
+            print("Connecting to database")
             conn = psycopg2.connect(
             host="192.168.160.18",
             database="postgres",
@@ -84,13 +88,15 @@ def consumeData(topic):
             conn.commit()
 
             cur.close()
+            print("Prediction saved to database")
             predictions_list.append([crypto, prediction])
             # cur = conn.cursor()
 
             # sql = """SELECT prediction FROM cryptos WHERE name='dogecoin' ORDER BY date DESC"""
             # cur.execute(sql)
             # predictions = cur.fetchall()[0][0]
-
+        print("get all predictions")
+        print("first elements of list", predictions_list[0:5])
         send_predictions(producer, 'MLPredictions', predictions_list)
 
 def get_crypto():
