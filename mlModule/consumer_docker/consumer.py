@@ -7,8 +7,8 @@ from datetime import datetime
 from datetime import timedelta
 import psycopg2
 
-KAFKA_SERVER = '192.168.160.18:9092'
-POSTGRES_SERVER = '192.168.160.18'
+KAFKA_SERVER = 'localhost:9092'
+POSTGRES_SERVER = 'localhost'
 CRYPTOS = ['bitcoin', 'dogecoin', 'ethereum']
 
 
@@ -59,6 +59,7 @@ def consumeData(topic):
 
     for msg in consumer:
         print("ML module get message")
+        print(msg.value)
         predictions_list = []
         for coin in msg.value:
             name = coin[0]
