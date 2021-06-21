@@ -120,11 +120,12 @@ class SequentialOutputModel():
     def dummy_prediction(self, data):
         prices = [x['value'] for x in data]
         last_timestamp = data[-1]['time']
+        last_id = data[-1]['id']
         data_mean = mean(prices)
         data_std = stdev(prices)
         predictions = []
         for x in range(0,24):
-            predictions.append([last_timestamp + x*3600, data_mean+data_std*random.randint(1,x+2)])
+            predictions.append({'id':last_id+x+1, 'time':last_timestamp + x*3600, 'value':data_mean+data_std*random.randint(1,x+2)})
         return(predictions)
 
 

@@ -63,7 +63,7 @@ def consumeData(topic):
         predictions_list = []
         for coin in msg.value:
             name = coin['id']
-            plotpoints = coin['plotpoints']
+            plotpoints = coin['plotPoints']
             print("coin name ", name)
             model = SequentialOutputModel()
             # model.load(topic)
@@ -91,7 +91,7 @@ def consumeData(topic):
 
             cur.close()
             print("Prediction saved to database")
-            predictions_list.append([crypto, prediction])
+            predictions_list.append({'id':name, 'plotPoint':prediction})
             # cur = conn.cursor()
 
             # sql = """SELECT prediction FROM cryptos WHERE name='dogecoin' ORDER BY date DESC"""
