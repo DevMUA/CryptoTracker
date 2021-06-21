@@ -8,6 +8,7 @@ from datetime import timedelta
 import psycopg2
 
 KAFKA_SERVER = '192.168.160.18:9092'
+POSTGRES_SERVER = '192.168.160.18'
 CRYPTOS = ['bitcoin', 'dogecoin', 'ethereum']
 
 
@@ -50,7 +51,7 @@ def consumeData(topic):
             group_id=topic+'_test',
             value_deserializer=lambda v: loads(v.decode('utf-8')))
         
-        producer = KafkaProducer(bootstrap_servers=['192.168.160.18:9092'],
+        producer = KafkaProducer(bootstrap_servers=[KAFKA_SERVER],
                             value_serializer=lambda x: 
                             dumps(x).encode('utf-8'))
     except:
@@ -74,7 +75,7 @@ def consumeData(topic):
             prediction_date = prediction_date.strftime("%m/%d/%Y, %H:%M:%S")
             print("Connecting to database")
             conn = psycopg2.connect(
-            host="192.168.160.18",
+            host=POSTGRES_SERVER,
             database="postgres",
             user="postgres",
             password="postgres")
