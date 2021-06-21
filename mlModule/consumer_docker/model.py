@@ -118,9 +118,8 @@ class SequentialOutputModel():
 
     
     def dummy_prediction(self, data):
-        prices = [x[1] for x in data]
-        print(data)
-        last_timestamp = data[-1][0]
+        prices = [x['value'] for x in data]
+        last_timestamp = data[-1]['time']
         data_mean = mean(prices)
         data_std = stdev(prices)
         predictions = []

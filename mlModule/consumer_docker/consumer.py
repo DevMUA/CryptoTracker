@@ -62,13 +62,13 @@ def consumeData(topic):
         print(msg.value)
         predictions_list = []
         for coin in msg.value:
-            name = coin[0]
-            prices = coin[1]
+            name = coin['id']
+            plotpoints = coin['plotpoints']
             print("coin name ", name)
             model = SequentialOutputModel()
             # model.load(topic)
             print("Start predictions")
-            prediction = model.dummy_prediction(prices)
+            prediction = model.dummy_prediction(plotpoints)
             print(prediction)
             date = datetime.now()
             crypto = name
